@@ -37,9 +37,21 @@ class Monster():
 
         print(f'A monster is attacking! {self.describe_activity()}')
 
-        target.population = target.population - 50
-        target.buildings = target.buildings - 10
-        target.stoplights = target.stoplights - 5
+        if target.population > 0:
+            target.population = target.population - 50
+        elif target.population <= 0:
+            target.population = 0
+
+        if target.buildings > 0:
+            target.buildings = target.buildings - 10
+        elif target.buildings <= 0:
+            target.buildings = 0
+
+        if target.stoplights > 0:
+            target.stoplights = target.stoplights - 5
+        elif target.stoplights <= 0:
+            target.stoplights = 0
+
 
         return target
     
@@ -54,7 +66,11 @@ class Vampire(Monster):
 
         print(f'A vampire is attacking! {self.describe_activity}')
 
-        target.population = target.population - 1
+        if target.population > 0:
+            target.population = target.population - 1
+        else:
+            target.population = 0
+
 
         return target
     
@@ -68,11 +84,35 @@ class Mutant(Monster):
         """Mutant attacks modify the population, buildings, and stoplights."""
         self.location = target
 
-        print(f'A monster is attacking! {self.describe_activity()}')
+        print(f'A mutant is attacking! {self.describe_activity()}')
 
         # Mutants kill between 1 person to up to 10% of the population in an attack
-        target.population = target.population - random.randint(1, math.floor(target.population*.1))
+        
+       
+        target.population = target.population - random.randint(1, math.floor(target.population*.1))        
+        if target.population <= 0:
+            target.population = 0
+       
         target.buildings = target.buildings - random.randint(1, math.floor(target.buildings*.15))
+        if target.buildings <= 0:
+            target.buildings = 0
+       
         target.stoplights = target.stoplights - random.randint(1, math.floor(target.stoplights*.12))
+        if target.stoplights <= 0:
+            target.stoplights = 0
+        
+    def rampage(self, indiana: Town) -> list:
+        
+        self.location = indiana
 
-        return target
+        terrorized_towns = []
+        i = 0
+
+        while i < len(indiana):
+            terrorized_towns.append(Mutant.terrorize_town(self, indiana[i]))
+
+            print(indiana[i].describe_town())
+            i += 1
+
+
+        return terrorized_towns
