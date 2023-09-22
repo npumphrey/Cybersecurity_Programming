@@ -1,11 +1,12 @@
 import random
 import math
+import string
 
 class Town():
 
     def __init__(self, name: str, population: int, buildings: int, stoplights: int):
         """Create a new instance of Town"""
-        self.name = name
+        self.name = string.capwords(name)
         self.population = population
         self.buildings = buildings
         self.stoplights = stoplights
@@ -39,21 +40,28 @@ class Monster():
 
         if target.population > 0:
             target.population = target.population - 50
-        elif target.population <= 0:
+        else:
             target.population = 0
 
         if target.buildings > 0:
             target.buildings = target.buildings - 10
-        elif target.buildings <= 0:
+        else:
             target.buildings = 0
+
 
         if target.stoplights > 0:
             target.stoplights = target.stoplights - 5
-        elif target.stoplights <= 0:
+        else:
             target.stoplights = 0
 
 
         return target
+
+    @property
+    def MonsterMMI(self) -> float:
+        pass
+
+        
     
 class Vampire(Monster):
 
@@ -64,7 +72,7 @@ class Vampire(Monster):
     def terrorize_town(self, target: Town) -> Town:
         self.location = target
 
-        print(f'A vampire is attacking! {self.describe_activity}')
+        # print(f'A vampire is attacking! {self.describe_activity}')
 
         if target.population > 0:
             target.population = target.population - 1
@@ -73,6 +81,10 @@ class Vampire(Monster):
 
 
         return target
+    
+    @property
+    def VampireMMI(self) -> float:
+        return ((self.weight/self.height)*.45)
     
 class Mutant(Monster):
     def __init__(self, name: str, height: float, weight: int):
@@ -88,31 +100,34 @@ class Mutant(Monster):
 
         # Mutants kill between 1 person to up to 10% of the population in an attack
         
-       
-        target.population = target.population - random.randint(1, math.floor(target.population*.1))        
-        if target.population <= 0:
+        if target.population > 0:
+            target.population = target.population - random.randint(0, math.floor(target.population*.1))        
+        else:
             target.population = 0
        
-        target.buildings = target.buildings - random.randint(1, math.floor(target.buildings*.15))
-        if target.buildings <= 0:
+        if target.buildings > 0:
+            target.buildings = target.buildings - random.randint(0, math.floor(target.buildings*.15))
+        else:
             target.buildings = 0
-       
-        target.stoplights = target.stoplights - random.randint(1, math.floor(target.stoplights*.12))
-        if target.stoplights <= 0:
+
+        if target.stoplights > 0:
+            target.stoplights = target.stoplights - random.randint(0, math.floor(target.stoplights*.12))
+        else:
             target.stoplights = 0
         
-    def rampage(self, indiana: Town) -> list:
+    def rampage(self, indiana: [Town]) -> list:
         
         self.location = indiana
 
         terrorized_towns = []
-        i = 0
 
-        while i < len(indiana):
-            terrorized_towns.append(Mutant.terrorize_town(self, indiana[i]))
-
-            print(indiana[i].describe_town())
-            i += 1
+        for town in indiana:
+            self.terrorize_town(town)
+            print(town.describe_town())
 
 
         return terrorized_towns
+    
+    @property
+    def MutantMMI(self) -> float:
+        return (self.weight/200)/(self.height*.10)
